@@ -1,20 +1,10 @@
-from sqlmodel import create_engine, Session, SQLModel
-from src.infrastructure.database.models.user_model import UserModel
+from collections.abc import Generator
 
-from src.core.config import settings
+from sqlmodel import Session
 
-DATABASE_URL = (
-    f"postgresql+psycopg2://{settings.DB_USER}:"
-    f"{settings.DB_PASSWORD}@{settings.DB_HOST}:"
-    f"{settings.DB_PORT}/{settings.DB_NAME}"
-)
-
-engine = create_engine(DATABASE_URL, echo=True)
+from src.infrastructure.database.session import engine
 
 
-def get_session():
+def get_session() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session
-        
-def init_db():
-    SQLModel.metadata.create_all(engine)
