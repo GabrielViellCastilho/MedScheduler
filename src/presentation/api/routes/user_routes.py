@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
@@ -7,6 +9,8 @@ from src.infrastructure.database.repositories.user_repository_impl import UserRe
 from src.infrastructure.auth.bcrypt_security_service import BcryptSecurityService
 from src.presentation.api.controllers.user_controller import UserController
 from src.presentation.api.schemas.user_schemas import CreateUserRequest
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -24,4 +28,6 @@ def create_user(
     request: CreateUserRequest,
     controller: UserController = Depends(get_controller),
 ):
-    return controller.create_user(request)
+    user = controller.create_user(request)
+    logger.info("CREATE User id=%s email=%s", user.id, user.email)
+    return user

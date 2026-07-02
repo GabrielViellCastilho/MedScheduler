@@ -1,0 +1,404 @@
+{
+  "info": {
+    "name": "MedScheduler - Patients, Doctors & Specialties",
+    "description": "CRUD de Specialties, Patients e Doctors (sem autenticação). Os requests de Create salvam o id retornado em variáveis de collection (specialty_id, patient_id, doctor_id) para encadear os demais requests automaticamente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "specialty_id", "value": "" },
+    { "key": "patient_id", "value": "" },
+    { "key": "doctor_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin\",\n  \"email\": \"admin@medscheduler.com\",\n  \"password\": \"secret123\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/", "host": ["{{baseUrl}}"], "path": ["users", ""] }
+          }
+        },
+        {
+          "name": "Create User - Duplicate Email (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin Duplicado\",\n  \"email\": \"admin@medscheduler.com\",\n  \"password\": \"secret123\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/users/", "host": ["{{baseUrl}}"], "path": ["users", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Specialties",
+      "item": [
+        {
+          "name": "Create Specialty",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.code === 200 || pm.response.code === 201);",
+                  "const body = pm.response.json();",
+                  "if (body.id) { pm.collectionVariables.set('specialty_id', body.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cardiology\",\n  \"description\": \"Heart specialist\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/specialties/", "host": ["{{baseUrl}}"], "path": ["specialties", ""] }
+          }
+        },
+        {
+          "name": "List Specialties",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/specialties/?limit=20&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["specialties", ""],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "offset", "value": "0" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Specialty by Id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/specialties/{{specialty_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["specialties", "{{specialty_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Specialty",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cardiology\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/specialties/{{specialty_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["specialties", "{{specialty_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Specialty",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/specialties/{{specialty_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["specialties", "{{specialty_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "Create Patient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.code === 200 || pm.response.code === 201);",
+                  "const body = pm.response.json();",
+                  "if (body.id) { pm.collectionVariables.set('patient_id', body.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"cpf\": \"529.982.247-25\",\n  \"birth_date\": \"1990-01-01\",\n  \"phone\": \"11999999999\",\n  \"email\": \"john@email.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/patients/", "host": ["{{baseUrl}}"], "path": ["patients", ""] }
+          }
+        },
+        {
+          "name": "Create Patient - Invalid CPF (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bad CPF\",\n  \"cpf\": \"11111111111\",\n  \"birth_date\": \"1990-01-01\",\n  \"phone\": \"11999999999\",\n  \"email\": \"bad@email.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/patients/", "host": ["{{baseUrl}}"], "path": ["patients", ""] }
+          }
+        },
+        {
+          "name": "Create Patient - Duplicate CPF (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Clone\",\n  \"cpf\": \"529.982.247-25\",\n  \"birth_date\": \"1990-01-01\",\n  \"phone\": \"11999999999\",\n  \"email\": \"clone@email.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/patients/", "host": ["{{baseUrl}}"], "path": ["patients", ""] }
+          }
+        },
+        {
+          "name": "List Patients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/patients/?limit=20&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", ""],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "offset", "value": "0" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Patients - Only Active",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/patients/?active=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", ""],
+              "query": [{ "key": "active", "value": "true" }]
+            }
+          }
+        },
+        {
+          "name": "List Patients - Only Inactive",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/patients/?active=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", ""],
+              "query": [{ "key": "active", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "Get Patient by Id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patient_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patient_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Patient",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"cpf\": \"529.982.247-25\",\n  \"birth_date\": \"1990-01-01\",\n  \"phone\": \"11888888888\",\n  \"email\": \"john.updated@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patient_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patient_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Inactivate Patient (soft delete)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patient_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patient_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctors",
+      "item": [
+        {
+          "name": "Create Doctor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.code === 200 || pm.response.code === 201);",
+                  "const body = pm.response.json();",
+                  "if (body.id) { pm.collectionVariables.set('doctor_id', body.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. House\",\n  \"crm\": \"12345-SP\",\n  \"specialty_id\": \"{{specialty_id}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/doctors/", "host": ["{{baseUrl}}"], "path": ["doctors", ""] }
+          }
+        },
+        {
+          "name": "Create Doctor - Invalid Specialty (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Bad\",\n  \"crm\": \"99999-SP\",\n  \"specialty_id\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/doctors/", "host": ["{{baseUrl}}"], "path": ["doctors", ""] }
+          }
+        },
+        {
+          "name": "List Doctors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/?limit=20&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", ""],
+              "query": [
+                { "key": "limit", "value": "20" },
+                { "key": "offset", "value": "0" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Doctors - Only Active",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/?active=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", ""],
+              "query": [{ "key": "active", "value": "true" }]
+            }
+          }
+        },
+        {
+          "name": "List Doctors - Only Inactive",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/?active=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", ""],
+              "query": [{ "key": "active", "value": "false" }]
+            }
+          }
+        },
+        {
+          "name": "List Doctors - By Specialty",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/?specialty_id={{specialty_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", ""],
+              "query": [{ "key": "specialty_id", "value": "{{specialty_id}}" }]
+            }
+          }
+        },
+        {
+          "name": "List Doctors - By Specialty and Active",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/?specialty_id={{specialty_id}}&active=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", ""],
+              "query": [
+                { "key": "specialty_id", "value": "{{specialty_id}}" },
+                { "key": "active", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Doctor by Id",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctor_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctor_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Doctor",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. House Updated\",\n  \"crm\": \"54321-SP\",\n  \"specialty_id\": \"{{specialty_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctor_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctor_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Inactivate Doctor (soft delete)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/doctors/{{doctor_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctors", "{{doctor_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
