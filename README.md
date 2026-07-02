@@ -51,9 +51,16 @@ Edite o `.env`:
 docker compose up --build
 ```
 
-### 4. Acessar a aplicação
+### 4. Executar as migrations
+Com os containers em execução, é necessário aplicar as migrations para criar e atualizar as tabelas no banco de dados.\
+Em um segundo terminal rodar o comando:
+```bash
+docker compose exec api alembic upgrade head
+```
 
-API: http://localhost:8000\
+### 5. Acessar a aplicação
+
+API: http://localhost:8000 \
 Docs: http://localhost:8000/docs
 
 ## Rodar testes
