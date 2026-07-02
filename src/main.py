@@ -9,6 +9,7 @@ from src.presentation.api.routes.user_routes import router as user_router
 from src.presentation.api.routes.specialty_routes import router as specialty_router
 from src.presentation.api.routes.patient_routes import router as patient_router
 from src.presentation.api.routes.doctor_routes import router as doctor_router
+from src.presentation.api.routes.appointment_routes import router as appointment_router
 
 configure_logging()
 
@@ -18,6 +19,7 @@ app.include_router(user_router)
 app.include_router(specialty_router)
 app.include_router(patient_router)
 app.include_router(doctor_router)
+app.include_router(appointment_router)
 
 
 @app.exception_handler(DomainValidationError)

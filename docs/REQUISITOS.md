@@ -246,10 +246,10 @@ Um médico não pode ter duas consultas no mesmo horário.
 Um paciente não pode ter duas consultas no mesmo horário.
 
 ### RN003
-Consultas só podem ser criadas em horários disponíveis.
+Consultas não podem ter conflito de horário para o médico.
 
 ### RN004
-Consultas não podem ser criadas em períodos bloqueados.
+Consultas devem respeitar intervalo válido (início < fim).
 
 ## Regras de Estado de Entidades
 
@@ -281,10 +281,10 @@ Cancelamentos devem respeitar política de antecedência mínima definida pela c
 ## Regras de Acesso Funcional (LGPD)
 
 ### RN012
-Um paciente só pode visualizar e gerenciar suas próprias consultas.
+Paciente só pode acessar suas próprias consultas.
 
 ### RN013
-Um médico só pode visualizar sua própria agenda e suas consultas.
+Médico só pode acessar suas próprias consultas.
 
 ## Regras de No-Show
 
@@ -354,34 +354,6 @@ Lembretes devem ser enviados automaticamente antes da consulta.
     updatedAt: datetime
 ```
 
-### Schedule
-
-```text
-    id: UUID
-    doctorId: UUID
-
-    weekday: enum (MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY | SATURDAY | SUNDAY)
-    startTime: time
-    endTime: time
-
-    createdAt: datetime
-    updatedAt: datetime
-```
-
-### ScheduleBlock
-
-```text
-    id: UUID
-    doctorId: UUID
-
-    startDateTime: datetime
-    endDateTime: datetime
-    reason: string
-
-    createdAt: datetime
-    updatedAt: datetime
-```
-
 ### Appointment
 
 ```text
@@ -427,26 +399,6 @@ Lembretes devem ser enviados automaticamente antes da consulta.
     updatedAt: datetime
 ```
 
-### AuditLog
-```text
-    id: UUID
-
-    userId: UUID
-
-    action: string
-    entity: string
-    entityId: UUID
-
-    timestamp: datetime
-
-    ipAddress: string | null
-    userAgent: string | null
-
-    metadata: string | json
-
-    createdAt: datetime
-```
-
 ---
 
 # 7. Relações
@@ -455,15 +407,11 @@ Lembretes devem ser enviados automaticamente antes da consulta.
     User → Doctor (1:0..1)
 
     Doctor → Specialty (N:1)
-
-    Doctor → Schedule (1:N)
-    Doctor → ScheduleBlock (1:N)
     Doctor → Appointment (1:N)
 
     Patient → Appointment (1:N)
 
     Appointment → Notification (1:N)
-    User → AuditLog (1:N)
 ```
 
 ---
@@ -501,14 +449,6 @@ Lembretes devem ser enviados automaticamente antes da consulta.
     POST   /specialties
     PUT    /specialties/:id
     DELETE /specialties/:id
-```
-
-### Availability
-```html
-    GET /doctors/:id/availability
-    GET /doctors/:id/schedule
-    POST /schedule-blocks
-    GET /schedule-blocks
 ```
 
 ### Appointments
