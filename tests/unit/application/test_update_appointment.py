@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 from uuid import uuid4
 
@@ -23,7 +23,7 @@ def test_update_appointment_success():
 
     use_case = UpdateAppointment(repo, doctor_repo, patient_repo)
 
-    start = datetime.utcnow()
+    start = datetime.now(timezone.utc)
     end = start + timedelta(hours=1)
 
     result = use_case.execute(
@@ -50,8 +50,8 @@ def test_update_appointment_not_found():
 
     result = use_case.execute(
         uuid4(), uuid4(), uuid4(),
-        datetime.utcnow(),
-        datetime.utcnow(),
+        datetime.now(timezone.utc),
+        datetime.now(timezone.utc),
     )
 
     assert result is None
@@ -78,6 +78,6 @@ def test_update_appointment_conflict():
             appointment.id,
             uuid4(),
             uuid4(),
-            datetime.utcnow(),
-            datetime.utcnow(),
+            datetime.now(timezone.utc),
+            datetime.now(timezone.utc),
         )

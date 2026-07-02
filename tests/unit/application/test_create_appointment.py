@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
 from uuid import uuid4
 
@@ -19,7 +19,7 @@ def test_create_appointment_success():
 
     use_case = CreateAppointment(repo, doctor_repo, patient_repo)
 
-    start = datetime.utcnow()
+    start = datetime.now(timezone.utc)
     end = start + timedelta(hours=1)
 
     result = use_case.execute(
@@ -44,7 +44,7 @@ def test_create_appointment_patient_not_found():
     use_case = CreateAppointment(repo, doctor_repo, patient_repo)
 
     with pytest.raises(RelatedEntityNotFoundError):
-        use_case.execute(uuid4(), uuid4(), datetime.utcnow(), datetime.utcnow())
+        use_case.execute(uuid4(), uuid4(), datetime.now(timezone.utc), datetime.now(timezone.utc))
 
 
 def test_create_appointment_doctor_not_found():
@@ -58,7 +58,7 @@ def test_create_appointment_doctor_not_found():
     use_case = CreateAppointment(repo, doctor_repo, patient_repo)
 
     with pytest.raises(RelatedEntityNotFoundError):
-        use_case.execute(uuid4(), uuid4(), datetime.utcnow(), datetime.utcnow())
+        use_case.execute(uuid4(), uuid4(), datetime.now(timezone.utc), datetime.now(timezone.utc))
 
 
 def test_create_appointment_conflict():
@@ -73,4 +73,4 @@ def test_create_appointment_conflict():
     use_case = CreateAppointment(repo, doctor_repo, patient_repo)
 
     with pytest.raises(ScheduleConflictError):
-        use_case.execute(uuid4(), uuid4(), datetime.utcnow(), datetime.utcnow())
+        use_case.execute(uuid4(), uuid4(), datetime.now(timezone.utc), datetime.now(timezone.utc))
