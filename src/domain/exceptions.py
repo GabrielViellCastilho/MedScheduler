@@ -4,3 +4,7 @@ class EntityAlreadyExistsError(ValueError):
 
 class RelatedEntityNotFoundError(ValueError):
     pass
+
+
+class ScheduleConflictError(ValueError):
+    pass
