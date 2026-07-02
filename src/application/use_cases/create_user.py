@@ -1,4 +1,5 @@
 from src.domain.entities.user import User, UserRole
+from src.domain.exceptions import EntityAlreadyExistsError
 from src.domain.repositories.user_repository import UserRepository
 from src.domain.services.security_service import SecurityService
 
@@ -10,6 +11,9 @@ class CreateUser:
         self.security = security
 
     def execute(self, name: str, email: str, password: str, role: str):
+
+        if self.repo.find_by_email(email) is not None:
+            raise EntityAlreadyExistsError(f"User with email {email} already exists")
 
         hashed_password = self.security.hash_password(password)
 
