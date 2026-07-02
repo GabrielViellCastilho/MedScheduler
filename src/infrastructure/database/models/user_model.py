@@ -11,6 +11,7 @@ class UserModel(SQLModel, table=True):
     email: str = Field(index=True, unique=True)
     password: str
     role: str
+    active: bool = True
 
     created_at: datetime
     updated_at: datetime

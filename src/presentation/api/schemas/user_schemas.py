@@ -6,3 +6,9 @@ class CreateUserRequest(BaseModel):
     email: str
     password: str
     role: str
+
+class UpdateUserRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str

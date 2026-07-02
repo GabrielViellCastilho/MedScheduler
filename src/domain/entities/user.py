@@ -18,6 +18,7 @@ class User:
     email: str
     password: str
     role: UserRole
+    active: bool
     created_at: datetime
     updated_at: datetime
 
@@ -30,6 +31,7 @@ class User:
             email=email,
             password=password,
             role=role,
+            active=True,
             created_at=now,
             updated_at=now,
         )
